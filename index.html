@@ -156,14 +156,19 @@ var CATEGORIES = ["All", "Videos", "Photos", "Popular", "New"];
 /* t=title, c=category, d=label, free=true/false,
    thumb=preview image path (optional), src=video or image path,
    g=fallback gradient colours */
-var ITEMS = [
-  { t: "Item 1", c: "Videos",  d: "12:40",     free: true,  thumb: "", src: "media/video1.mp4", g: ["#7a1f4a", "#2a0f20"] },
-  { t: "Item 2", c: "Videos",  d: "18:05",     free: false, thumb: "", src: "media/video2.mp4", g: ["#a3294f", "#1a0a13"] },
-  { t: "Item 3", c: "Photos",  d: "24 photos", free: true,  thumb: "", src: "media/photo1.jpg", g: ["#5c2a6e", "#1b0b22"] },
-  { t: "Item 4", c: "Videos",  d: "22:10",     free: false, thumb: "", src: "media/video3.mp4", g: ["#c2503a", "#2a0f20"] },
-  { t: "Item 5", c: "Photos",  d: "36 photos", free: false, thumb: "", src: "media/photo2.jpg", g: ["#b9822f", "#2a1810"] },
-  { t: "Item 6", c: "Popular", d: "31:20",     free: false, thumb: "", src: "media/video4.mp4", g: ["#6a2f8a", "#14070f"] },
-  { t: "Item 7", c: "New",     d: "15:33",     free: false, thumb: "", src: "media/video5.mp4", g: ["#d1385f", "#1f0d18"] }
+var ITEMS = [var ITEMS = [
+  { t: "My First Video", c: "Videos", d: "12:40", free: true,
+    thumb: "media/video1-thumb.jpg", src: "media/video1.mp4", g: ["#7a1f4a","#2a0f20"] },
+
+  { t: "Premium Video 2", c: "Videos", d: "18:05", free: false,
+    thumb: "media/video2-thumb.jpg", src: "media/video2.mp4", g: ["#a3294f","#1a0a13"] },
+
+  { t: "sex video 1", c: "Photos", d: "1 photo", free: true,
+    thumb: "media/photo1.jpg", src: "media/photo1.jpg", g: ["#5c2a6e","#1b0b22"] },
+
+  { t: "Photo 2", c: "Photos", d: "1 photo", free: false,
+    thumb: "media/photo2.jpg", src: "media/photo2.jpg", g: ["#b9822f","#2a1810"] }
+];
 ];
 /* ================================================== */
 
