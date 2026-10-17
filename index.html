@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Velvet – Adults only</title>
+<style>
+:root{--bg:#14070f;--panel:#1f0d18;--line:#3a1a2c;--text:#f6e9ee;--muted:#b394a3;--accent:#e63e6d;--gold:#f0b66b;--ok:#4fd18b;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom,0px)}
+h1,h2,h3{font-family:Georgia,serif;margin:0}
+button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;background:rgba(20,7,15,.95);border-bottom:1px solid var(--line)}
+.logo{font-family:Georgia,serif;font-size:1.4rem;color:var(--accent)}
+.btn{border:0;border-radius:999px;padding:12px 18px;font-weight:700;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.badge{font-size:.8rem;color:var(--ok);border:1px solid var(--ok);border-radius:999px;padding:4px 10px}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.hero{padding:24px 0 16px}
+.hero h1{font-size:clamp(1.9rem,6vw,3.2rem);line-height:1.1;max-width:14ch}
+.hero p{color:var(--muted);max-width:46ch}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:8px 0 16px}
+.tab{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 16px}
+.tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;color:inherit;padding:0;width:100%}
+.thumb{aspect-ratio:16/10;position:relative;display:grid;place-items:center;background-size:cover;background-position:center}
+.play{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.5);display:grid;place-items:center;font-size:1.2rem}
+.locked .thumb::after{content:"";position:absolute;inset:0;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(20,7,15,.5)}
+.tag{position:absolute;z-index:2;top:10px;right:10px;font-weight:700;font-size:.75rem;border-radius:999px;padding:3px 10px}
+.tag.lock{background:var(--gold);color:#2a1300}
+.tag.free{background:var(--ok);color:#052914}
+.meta{padding:10px 12px 14px}
+.meta h3{font-size:1rem}
+.meta span{color:var(--muted);font-size:.85rem}
+.banner{margin:28px 0;padding:20px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(135deg,#2a0f20,#1a0a13);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+footer{padding:24px 16px 40px;text-align:center;color:var(--muted);font-size:.8rem}
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(8,2,6,.92);display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.sheet{width:100%;max-width:440px;max-height:100%;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px}
+.sheet h2{font-size:1.6rem;margin-bottom:6px}
+.sheet p{color:var(--muted);margin:6px 0 14px}
+.plans{display:grid;gap:10px;margin:14px 0}
+.plan{display:flex;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:transparent;color:var(--text);width:100%}
+.plan.on{border-color:var(--gold);background:#2b1522}
+.steps{margin:0 0 14px;padding-left:20px}
+.till{display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px dashed var(--gold);border-radius:12px;padding:12px 14px;margin:10px 0}
+.till strong{font-size:1.5rem;letter-spacing:.08em;color:var(--gold)}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;text-transform:uppercase}
+.err{color:#ff8aa5;font-size:.85rem;min-height:1.2em;margin:6px 0}
+.row{display:flex;gap:10px;margin-top:10px}
+.row .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ok);color:#052914;font-weight:700;padding:10px 18px;border-radius:999px;z-index:60;display:none}
+.toast.show{display:block}
+.player{border-radius:12px;overflow:hidden;margin:12px 0;background:#000}
+.player video,.player img{display:block;width:100%;max-height:70vh;object-fit:contain}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- AGE GATE -->
+<div class="overlay open" id="age">
+  <div class="sheet" style="text-align:center">
+    <h2>Adults only (18+)</h2>
+    <p>This app contains adult content. Confirm you are 18 or older and that viewing it is legal where you live.</p>
+    <div class="row">
+      <button type="button" class="btn ghost" onclick="leaveSite()">Leave</button>
+      <button type="button" class="btn" onclick="enterSite()">I am 18+</button>
+    </div>
+  </div>
+</div>
+
+<!-- Age gate script is inline and first, so it always works -->
+<script>
+function enterSite(){
+  document.getElementById("age").classList.remove("open");
+  try{ localStorage.setItem("velvet_age","1"); }catch(e){}
+}
+function leaveSite(){ window.location.href = "https://www.google.com"; }
+try{ if(localStorage.getItem("velvet_age")==="1"){ document.getElementById("age").classList.remove("open"); } }catch(e){}
+</script>
+
+<header>
+  <span class="logo">Velvet</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="badge" id="status" hidden>Premium active</span>
+    <button type="button" class="btn" id="openPay" onclick="openPay()">Unlock all</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Private nights, on demand.</h1>
+    <p>Browse the previews for free. Pay once with M-Pesa to unlock every video and gallery.</p>
+  </section>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="grid"></div>
+
+  <div class="banner" id="banner">
+    <div><h2 style="font-size:1.3rem">Unlock the full library</h2><span style="color:var(--muted)">Pay by M-Pesa Till. Access starts after your code is confirmed.</span></div>
+    <button type="button" class="btn" onclick="openPay()">See plans</button>
+  </div>
+</main>
+
+<footer>All performers are 18+ with documented consent. Report content: report@yourdomain.com<br>© Velvet. Adults only.</footer>
+
+<!-- PAYWALL -->
+<div class="overlay" id="pay">
+  <div class="sheet">
+    <h2>Unlock premium</h2>
+    <p>Choose a plan, then pay with M-Pesa.</p>
+    <div class="plans" id="plans"></div>
+    <ol class="steps">
+      <li>Open M-Pesa, then Lipa na M-Pesa, then Buy Goods.</li>
+      <li>Enter the Till Number below.</li>
+      <li>Enter the exact amount and your PIN.</li>
+      <li>Paste the M-Pesa code from the SMS here.</li>
+    </ol>
+    <div class="till"><div><span style="color:var(--muted);font-size:.8rem">Till Number</span><br><strong id="tillNo"></strong></div><button type="button" class="btn ghost" id="copyTill" onclick="copyTill()">Copy</button></div>
+    <div style="margin:6px 0"><span style="color:var(--muted)">Amount: </span><strong id="amt"></strong></div>
+    <label for="code" style="font-size:.85rem;color:var(--muted)">M-Pesa confirmation code</label>
+    <input id="code" maxlength="10" placeholder="e.g. SJK4X9ABCD" autocomplete="off">
+    <div class="err" id="err"></div>
+    <div class="row">
+      <button type="button" class="btn ghost" onclick="closePay()">Cancel</button>
+      <button type="button" class="btn" onclick="confirmPay()">Confirm payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEWER -->
+<div class="overlay" id="view">
+  <div class="sheet" style="max-width:640px">
+    <h2 id="viewT"></h2>
+    <div class="player" id="player"></div>
+    <div class="row"><button type="button" class="btn" onclick="closeViewer()">Close</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Premium unlocked</div>
+
+<script>
+/* ============ CONFIG: EDIT THIS SECTION ============ */
+var TILL_NUMBER = "123456";
+
+var PLANS = [
+  { id: "day",   label: "1 day",   price: 50  },
+  { id: "week",  label: "7 days",  price: 200 },
+  { id: "month", label: "30 days", price: 500 }
+];
+
+var CATEGORIES = ["All", "Videos", "Photos", "Popular", "New"];
+
+/* t=title, c=category, d=label, free=true/false,
+   thumb=preview image path (optional), src=video or image path,
+   g=fallback gradient colours */
+var ITEMS = [
+  { t: "Item 1", c: "Videos",  d: "12:40",     free: true,  thumb: "", src: "media/video1.mp4", g: ["#7a1f4a", "#2a0f20"] },
+  { t: "Item 2", c: "Videos",  d: "18:05",     free: false, thumb: "", src: "media/video2.mp4", g: ["#a3294f", "#1a0a13"] },
+  { t: "Item 3", c: "Photos",  d: "24 photos", free: true,  thumb: "", src: "media/photo1.jpg", g: ["#5c2a6e", "#1b0b22"] },
+  { t: "Item 4", c: "Videos",  d: "22:10",     free: false, thumb: "", src: "media/video3.mp4", g: ["#c2503a", "#2a0f20"] },
+  { t: "Item 5", c: "Photos",  d: "36 photos", free: false, thumb: "", src: "media/photo2.jpg", g: ["#b9822f", "#2a1810"] },
+  { t: "Item 6", c: "Popular", d: "31:20",     free: false, thumb: "", src: "media/video4.mp4", g: ["#6a2f8a", "#14070f"] },
+  { t: "Item 7", c: "New",     d: "15:33",     free: false, thumb: "", src: "media/video5.mp4", g: ["#d1385f", "#1f0d18"] }
+];
+/* ================================================== */
+
+function $(s){ return document.querySelector(s); }
+var premium = false, plan = PLANS[1], cat = "All";
+try{ premium = localStorage.getItem("velvet_premium") === "1"; }catch(e){}
+
+function renderTabs(){
+  var box = $("#tabs"); box.innerHTML = "";
+  CATEGORIES.forEach(function(c){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "tab" + (c === cat ? " on" : "");
+    b.textContent = c;
+    b.onclick = function(){ cat = c; renderTabs(); renderGrid(); };
+    box.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  var box = $("#grid"); box.innerHTML = "";
+  ITEMS.forEach(function(i, idx){
+    if (cat !== "All" && i.c !== cat) return;
+    var open = i.free || premium;
+    var bg = i.thumb ? "url('" + i.thumb + "')" : "linear-gradient(135deg," + i.g[0] + "," + i.g[1] + ")";
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "card" + (open ? "" : " locked");
+    b.innerHTML =
+      '<div class="thumb" style="background-image:' + bg + '">' + (open ? '<div class="play">▶</div>' : '') + '</div>' +
+      (open ? ((i.free && !premium) ? '<span class="tag free">Free</span>' : '') : '<span class="tag lock">🔒 Premium</span>') +
+      '<div class="meta"><h3>' + i.t + '</h3><span>' + i.c + ' · ' + i.d + '</span></div>';
+    b.onclick = function(){ open ? openViewer(idx) : openPay(); };
+    box.appendChild(b);
+  });
+  $("#status").hidden = !premium;
+  $("#openPay").hidden = premium;
+  $("#banner").hidden = premium;
+}
+
+function openViewer(idx){
+  var i = ITEMS[idx];
+  $("#viewT").textContent = i.t;
+  var isVideo = /\.(mp4|webm|ogg)$/i.test(i.src);
+  $("#player").innerHTML = isVideo
+    ? '<video controls playsinline src="' + i.src + '"></video>'
+    : '<img src="' + i.src + '" alt="' + i.t + '">';
+  $("#view").classList.add("open");
+}
+function closeViewer(){ $("#player").innerHTML = ""; $("#view").classList.remove("open"); }
+
+function renderPlans(){
+  var box = $("#plans"); box.innerHTML = "";
+  PLANS.forEach(function(p){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "plan" + (p.id === plan.id ? " on" : "");
+    b.innerHTML = '<span>' + p.label + '</span><strong>KES ' + p.price + '</strong>';
+    b.onclick = function(){ plan = p; renderPlans(); };
+    box.appendChild(b);
+  });
+  $("#amt").textContent = "KES " + plan.price;
+}
+function openPay(){
+  $("#err").textContent = ""; $("#code").value = "";
+  renderPlans(); $("#pay").classList.add("open");
+}
+function closePay(){ $("#pay").classList.remove("open"); }
+
+function copyTill(){
+  try{
+    navigator.clipboard.writeText(TILL_NUMBER).then(function(){
+      $("#copyTill").textContent = "Copied";
+      setTimeout(function(){ $("#copyTill").textContent = "Copy"; }, 1500);
+    });
+  }catch(e){}
+}
+
+function confirmPay(){
+  var code = $("#code").value.trim().toUpperCase();
+  if (!/^[A-Z0-9]{10}$/.test(code)){
+    $("#err").textContent = "Enter the 10-character code from your M-Pesa SMS.";
+    return;
+  }
+  /* TODO: replace the demo line with a real server check (Safaricom Daraja):
+     fetch("https://YOUR-SERVER/api/verify", {method:"POST",
+       headers:{"Content-Type":"application/json"},
+       body: JSON.stringify({code: code, planId: plan.id})})
+     .then(function(r){ return r.json(); })
+     .then(function(d){ if(d.ok){ unlock(); } else { $("#err").textContent = "Payment not found."; } });
+  */
+  unlock(); // DEMO ONLY: unlocks for any valid-looking code
+}
+
+function unlock(){
+  premium = true;
+  try{ localStorage.setItem("velvet_premium","1"); }catch(e){}
+  closePay(); renderGrid();
+  $("#toast").classList.add("show");
+  setTimeout(function(){ $("#toast").classList.remove("show"); }, 2500);
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape"){ closePay(); closeViewer(); }
+});
+
+$("#tillNo").textContent = TILL_NUMBER;
+renderTabs();
+renderGrid();
+</script>
+</body>
+</html>
